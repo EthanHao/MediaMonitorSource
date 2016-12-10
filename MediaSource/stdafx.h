@@ -33,9 +33,15 @@
 //Direct Show
 #include <Dshow.h>
 
-//windows media format
+//windows media foundation
 #include <mfapi.h>
 #include <mfidl.h>
 #include <Mfreadwrite.h>
 #include <mferror.h>
+
+//windows format sdk
+#include <wmsdk.h>
+
+//util
+#include "util.h"
 // TODO: reference additional headers your program requires here

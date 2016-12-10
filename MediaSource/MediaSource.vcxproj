@@ -146,14 +146,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BufferQueue.h" />
-    <ClInclude Include="CamOp.h" />
-    <ClInclude Include="AsfNetworkMonitorDealer.h" />
+    <ClInclude Include="MediaStreamManager.h" />
+    <ClInclude Include="AsfSourceDealer.h" />
     <ClInclude Include="ISampleDealer.h" />
     <ClInclude Include="MediaSource.h" />
+    <ClInclude Include="MediaType.h" />
     <ClInclude Include="qedit.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Sample.h" />
-    <ClInclude Include="SampleGGB.h" />
     <ClInclude Include="SampleGrabber.h" />
     <ClInclude Include="Splitter.h" />
     <ClInclude Include="stdafx.h" />
@@ -161,8 +161,8 @@
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AsfNetworkMonitorDeal.cpp" />
-    <ClCompile Include="CamOp.cpp" />
+    <ClCompile Include="AsfSourceDeal.cpp" />
+    <ClCompile Include="MediaStreamManager.cpp" />
     <ClCompile Include="ISampleDealer.cpp" />
     <ClCompile Include="MediaSource.cpp" />
     <ClCompile Include="Splitter.cpp" />

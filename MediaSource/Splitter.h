@@ -12,12 +12,9 @@ public:
 	bool OnSample(const bool nbVideo, 
 		const double ndbTime, 
 		const char *npBuffer, 
-		const long nBufferLen, 
-		const AM_MEDIA_TYPE* npMedia);
+		const long nBufferLen);
 	
-	//Not copyable and copy-assignable
-	CSplitter(const CSplitter &) = delete;
-	CSplitter& operator=(const CSplitter &) = delete;
+	
 private:
 	std::mutex mMutex;
 	std::unique_ptr<std::list<const ISampleDealer*>> mListDealer = nullptr;

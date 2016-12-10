@@ -10,26 +10,13 @@ typedef bool(*VideoWaterMarkCallback)(PVOID, PBYTE &, int);
 template <bool VideoType>
 class CSampleGrabber : public ISampleGrabberCB
 {
-
 private:
-	AM_MEDIA_TYPE mStreamType; //The meta information for stream
 	CSplitter& mSplitter;
-	double mbPreSampleTime; //sec
-	PVOID mpContex;
+
 public:
-	void SetContextAndCallBack(VideoWaterMarkCallback npFun, PVOID npContext)
-	{
-		mpContex = npContext;
-	
-	}
-	
 	CSampleGrabber(CSplitter & nSplitter):
 		mSplitter(nSplitter)
 	{
-		mpWaterMarkFun = NULL;
-		mpContex = NULL;
-		mbPreSampleTime = 0;
-		
 	}
 	
 	// Fake referance counting.
@@ -57,9 +44,9 @@ public:
 		return S_OK;
 	}
 
-	STDMETHODIMP BufferCB(double ndbTime, BYTE *pBuffer, long nBufferLen)
+	STDMETHODIMP BufferCB(double ndbTime, BYTE*pBuffer,long nBufferLen)
 	{
-		mSplitter.OnSample(VideoType,ndbTime, pBuffer, nBufferLen, &mStreamType);
+		mSplitter.OnSample(VideoType, ndbTime, static_cast<char*>pBuffer, nBufferLen);
 		return S_OK;
 	}
 };

@@ -33,12 +33,11 @@ bool CSplitter::RemoveAll()
 bool CSplitter::OnSample(const bool nbVideo,
 	const double ndbTime,
 	const char *npBuffer,
-	const long nBufferLen,
-	const AM_MEDIA_TYPE* npMedia)
+	const long nBufferLen)
 {
 	std::lock_guard<std::mutex> lock(mMutex);
 	if(mListDealer)
 		for(auto const & p : *mListDealer)
-			p->PushSample(nbVideo,ndbTime, npBuffer,nBufferLen,npMedia);
+			p->PushSample(nbVideo,ndbTime, npBuffer,nBufferLen);
 	return true;
 }

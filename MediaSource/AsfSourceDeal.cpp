@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "util.h"
-#include "CustomeSampleDeal.h"
+#include "AsfSourceDealer.h"
 
 
 //Callback class ,can recevie the event
@@ -36,11 +36,12 @@ public:
 //	va_end(args);
 //	OutputDebugStringA(lBuf);
 //}
-bool CAsfNetworkMonitorDeal::DealVideoSample(const double ndbTime,
-	const BYTE *pBuffer,
+
+bool CAsfSourceDealer::DealWithVideoSample(const double ndbTime,
+	const char *pBuffer,
 	const long nBufferLen)
 {
-	if (pBuffer == NULL || nBufferLen == 0 || VideoType() == NULL || !mpWriter )
+	if (pBuffer == NULL || nBufferLen == 0 || VideoType() == nullptr|| !mpWriter )
 		return false;
 
 	
@@ -72,8 +73,8 @@ bool CAsfNetworkMonitorDeal::DealVideoSample(const double ndbTime,
 }
 
 
-bool CAsfNetworkMonitorDeal::DealAudioSample(const double ndbTime,
-	const BYTE *pBuffer,
+bool CAsfSourceDealer::DealWithAudioSample(const double ndbTime,
+	const char *pBuffer,
 	const long nBufferLen)
 {
 	if (pBuffer == NULL || nBufferLen == 0 || AudioType() == NULL || !mpWriter )
@@ -107,7 +108,7 @@ bool CAsfNetworkMonitorDeal::DealAudioSample(const double ndbTime,
 }
 
 //Init the writer 
-HRESULT CAsfNetworkMonitorDeal::InitWriter()
+HRESULT CAsfSourceDealer::InitWriter()
 {
 	HRESULT hr = S_OK;
 
@@ -132,7 +133,7 @@ HRESULT CAsfNetworkMonitorDeal::InitWriter()
 
 
 //Config the writer 
-HRESULT CAsfNetworkMonitorDeal::ConfigureProfile()
+HRESULT CAsfSourceDealer::ConfigureProfile()
 {
 	//Set input
 	HRESULT hr = S_OK;
@@ -187,28 +188,28 @@ HRESULT CAsfNetworkMonitorDeal::ConfigureProfile()
 }
 
 
-HRESULT CAsfNetworkMonitorDeal::DealBeginningThread()
+bool CAsfSourceDealer::DealerBeginningThread()
 {
 	
 	//Init Writer
 	HRESULT hr = InitWriter();
 	
 	//Begin Writting
-	if(SUCCEEDED(hr))
-		hr = mpWriter->BeginWriting();
+	SUCCESS_HR(hr = mpWriter->BeginWriting());
 	//PostMessage(mhEventWnd, WM_CPATURENOTIFY, WPARAM_CAPTURE_STARTED, SUCCEEDED(hr) ? 0 : 1);
-	return hr;
+	return SUCCEEDED(hr);
 }
-HRESULT  CAsfNetworkMonitorDeal::DealEndThread()
+bool  CAsfSourceDealer::DealerEndThread()
 {
 	if (!mpWriter || !mpWriterAdvanced || !mpNetSink)
-		return S_FALSE;
+		return false;
 
 	//Try to close the port
-	HRESULT hr = mpWriter->EndWriting();
-	hr = mpWriterAdvanced->RemoveSink(mpNetSink);
-	hr = mpNetSink->Close();
+	HRESULT hr = S_OK;
+	SUCCESS_HR(hr = mpWriter->EndWriting());
+	SUCCESS_HR(hr = mpWriterAdvanced->RemoveSink(mpNetSink));
+	SUCCESS_HR(hr = mpNetSink->Close());
 	//PostMessage(mhEventWnd, WM_CPATURENOTIFY, WPARAM_CAPTUREND, SUCCEEDED(hr) ? 0 : hr);
-	return S_OK;
+	return SUCCEEDED(hr);
 
 }

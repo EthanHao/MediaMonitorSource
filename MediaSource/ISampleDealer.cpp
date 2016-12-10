@@ -57,25 +57,13 @@ void ISampleDealer::SampleCallbakcFunction(ISampleDealer* lpParam)
 	//free memory
 	if (lpVideoBuffer != nullptr)
 		delete[] lpVideoBuffer;
+
 	if (lpAudioBuffer != nullptr)
 		delete[] lpAudioBuffer;
 
 	return ;
 }
-ISampleDealer::ISampleDealer(const AM_MEDIA_TYPE* nVideoType, const AM_MEDIA_TYPE* nAudioType)
-{
-	
-	if (nVideoType != NULL)
-	{
-		mVideoMediaType = CreateMediaType(nVideoType);
 
-	}
-	if (nAudioType != NULL)
-	{
-		mAudioMediaType = CreateMediaType(nAudioType);
-	}
-
-}
 bool ISampleDealer::Start()
 {
 	mbExit = false; 
@@ -107,8 +95,7 @@ ISampleDealer::~ISampleDealer()
 bool ISampleDealer::PushSample(const bool nbVideo,
 	const  double ndbTime,
 	const  char *npBuffer,
-	const  long nBufferLen, 
-	const  AM_MEDIA_TYPE* npMedia)
+	const  long nBufferLen)
 {
 	//has quit
 	if (mbExit != false)
@@ -147,7 +134,7 @@ bool ISampleDealer::PushSample(const bool nbVideo,
 //       >0 get something 
 int ISampleDealer::FetchVideoSample(double& ndbTime,
 	char* & npBuffer, 
-	int nLen) const
+	const int nLen) 
 {
 	std::lock_guard<std::mutex> lock(mMutexVideo);
 	//if queue is null return 0
@@ -164,7 +151,7 @@ int ISampleDealer::FetchVideoSample(double& ndbTime,
 }
 int ISampleDealer::FetchAudioSample(double& ndbTime, 
 	char* & npBuffer,
-	int nLen) const
+	const int nLen) 
 {
 	std::lock_guard<std::mutex> lock(mMutexAudio);
 	//if queue is null return 0

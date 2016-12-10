@@ -30,16 +30,10 @@
     <ClInclude Include="MediaSource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CamOp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="qedit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Splitter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SampleGGB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SampleGrabber.h">
@@ -57,7 +51,13 @@
     <ClInclude Include="ISampleDealer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AsfNetworkMonitorDealer.h">
+    <ClInclude Include="AsfSourceDealer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MediaType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MediaStreamManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -68,12 +68,6 @@
     <ClCompile Include="MediaSource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CamOp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AsfNetworkMonitorDeal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Splitter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -81,6 +75,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ISampleDealer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AsfSourceDeal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MediaStreamManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
