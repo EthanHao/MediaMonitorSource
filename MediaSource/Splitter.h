@@ -6,8 +6,8 @@
 class  CSplitter
 {
 public:
-	bool RegisterDealer(const ISampleDealer * npDeal);
-	bool RemoveDealer(const ISampleDealer * npDeal);
+	bool RegisterDealer( ISampleDealer *const npDeal);
+	bool RemoveDealer( ISampleDealer *const npDeal);
 	bool RemoveAll();
 	bool OnSample(const bool nbVideo, 
 		const double ndbTime, 
@@ -17,5 +17,5 @@ public:
 	
 private:
 	std::mutex mMutex;
-	std::unique_ptr<std::list<const ISampleDealer*>> mListDealer = nullptr;
+	std::unique_ptr<std::list<ISampleDealer*>> mListDealer = nullptr;
 };

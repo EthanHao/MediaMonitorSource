@@ -11,8 +11,8 @@ private:
 	std::mutex    mMutexVideo;
 	std::mutex    mMutexAudio;
 	std::thread   mThread;
-	std::unique_ptr<BufferQueue> mVideoBufferQueue;
-	std::unique_ptr<BufferQueue> mAudioBufferQueue;
+	std::unique_ptr<BufferQueue> mVideoBufferQueue = nullptr;
+	std::unique_ptr<BufferQueue> mAudioBufferQueue = nullptr;
 	std::atomic<bool> mbExit = false;
 
 protected:
@@ -61,7 +61,7 @@ public:
 private:
 	bool IsExit();
 	
-	void  SampleCallbakcFunction(ISampleDealer* lpParam);
+	static void  SampleCallbakcFunction(ISampleDealer* lpParam);
 
 public:
 	virtual bool DealWithVideoSample(const double ndbTime,

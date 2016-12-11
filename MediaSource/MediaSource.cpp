@@ -3,14 +3,14 @@
 
 #include "stdafx.h"
 #include "MediaSource.h"
-
+#include "MediaStreamManager.h"
 #define MAX_LOADSTRING 100
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-
+CMediaStreamManager gStreamManager;
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -111,6 +111,32 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+void OpenCameraForMonitor(HWND hWnd)
+{
+	//enum video device
+	gStreamManager.EnumDevice(true);
+
+	//enum audio device
+	gStreamManager.EnumDevice(false);
+
+	//First Camera Device with RGB32 color space limited as the default
+	//Fir
+	if (SUCCEEDED(gStreamManager.StartPreview(L"",
+		L"RGB24 640 480",
+		L"",
+		hWnd)))
+	{
+		gStreamManager.StartAsfMonitor(8888, WMProfile_V80_100Video);
+	}
+	
+	return;
+}
+
+
+void StopCameraForMonitor(HWND hWnd)
+{
+	return;
+}
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -137,6 +163,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
+			case ID_OPERATE_OPEN:
+				OpenCameraForMonitor(hWnd);
+				break;
+			case ID_OPERATE_STOP:
+				StopCameraForMonitor(hWnd);
+				break;
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
@@ -150,6 +182,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             EndPaint(hWnd, &ps);
         }
         break;
+	case WM_SIZE:
+		gStreamManager.ResizeVideoWindow(hWnd);
+		break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;

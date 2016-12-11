@@ -31,7 +31,6 @@ private:
 	CComPtr<ISampleGrabber> mpGrabber = nullptr;
 	CComPtr<IBaseFilter> mpGrabberAudioFilter = nullptr;
 	CComPtr<ISampleGrabber> mpGrabberAudio = nullptr;
-	CComPtr<IBaseFilter> mpVideoNullRender = nullptr;
 	CComPtr<IBaseFilter> mpAudioNullRender = nullptr;
 	UINT32 mStatus;
 
@@ -54,6 +53,7 @@ private:
 	//TearDown Graph
 	HRESULT TearDownGraph();
 	void RemoveDownstream(IBaseFilter *pf);
+	HRESULT SetupVideoWindow(HWND hWnd);
 
 	//Init Filter
 	HRESULT InitFilter();
@@ -93,5 +93,8 @@ public:
 	
 	//Stop asf monitor
 	HRESULT StopAsfMonitor();
+
+	//Resize Windows
+	HRESULT ResizeVideoWindow(HWND hWnd);
 };
 

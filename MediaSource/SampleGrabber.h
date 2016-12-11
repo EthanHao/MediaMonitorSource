@@ -46,7 +46,7 @@ public:
 
 	STDMETHODIMP BufferCB(double ndbTime, BYTE*pBuffer,long nBufferLen)
 	{
-		mSplitter.OnSample(VideoType, ndbTime, static_cast<char*>pBuffer, nBufferLen);
+		mSplitter.OnSample(VideoType, ndbTime, reinterpret_cast<char*>(pBuffer), nBufferLen);
 		return S_OK;
 	}
 };

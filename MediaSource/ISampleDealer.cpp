@@ -37,7 +37,7 @@ void ISampleDealer::SampleCallbakcFunction(ISampleDealer* lpParam)
 		{
 			lnAudioLen = lpDeal->FetchAudioSample(ldbTime, lpVideoBuffer, 0);
 			if (lnAudioLen > 0)
-				lpVideoBuffer = new (std::nothrow)char[lnAudioLen];
+				lpAudioBuffer = new (std::nothrow)char[lnAudioLen];
 		}
 
 		if (lpAudioBuffer )
@@ -124,7 +124,7 @@ bool ISampleDealer::PushSample(const bool nbVideo,
 		}
 
 		//Push to video buffer queue
-		mVideoBufferQueue->Push(ndbTime, npBuffer, nBufferLen);
+		mAudioBufferQueue->Push(ndbTime, npBuffer, nBufferLen);
 	}
 	return true;
 }

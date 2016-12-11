@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include  "MediaStreamManager.h"
 
+#pragma comment(lib,"Strmiids.lib")
 #pragma comment(lib, "Winmm.lib")
 #pragma comment(lib, "wmvcore.lib")
 #pragma warning(disable:4995)
@@ -70,9 +71,6 @@ HRESULT CMediaStreamManager::InitFilter()
 	if (FAILED(hr))
 		return hr;
 
-	hr = mpVideoNullRender.CoCreateInstance(CLSID_NullRenderer);
-	if (FAILED(hr))
-		return hr;
 
 	hr = mpAudioNullRender.CoCreateInstance(CLSID_NullRenderer);
 	if (FAILED(hr))
@@ -85,7 +83,6 @@ HRESULT CMediaStreamManager::UnInitFilter()
 {
 
 	mpAudioNullRender.Release();
-	mpVideoNullRender.Release();
 	mpGrabberVideoFilter.Release();
 	mpGrabber.Release();
 	mpME.Release();
@@ -99,7 +96,6 @@ HRESULT CMediaStreamManager::UnInitFilter()
 	mpACap.Release();
 
 	mpAudioNullRender.Detach();
-	mpVideoNullRender.Detach();
 	mpGrabberVideoFilter.Detach();
 	mpGrabber.Detach();
 	mpME.Detach();
@@ -252,7 +248,7 @@ HRESULT CMediaStreamManager::ConfigVideoDevice(const std::wstring& nsVideoDevCap
 		//Get Device Capability
 		int lnX = 640;
 		int lnY = 480;
-		GUID lSubtypeGuid = MEDIASUBTYPE_RGB32;
+		GUID lSubtypeGuid = MEDIASUBTYPE_RGB24;
 		if (!nsVideoDevCap.empty())
 		{
 			WCHAR lsSubType[50] = { 0 };
@@ -277,7 +273,7 @@ HRESULT CMediaStreamManager::ConfigVideoDevice(const std::wstring& nsVideoDevCap
 				{
 					VIDEO_STREAM_CONFIG_CAPS * lpSCC = (VIDEO_STREAM_CONFIG_CAPS*)bbuf;
 					if (pmt->formattype == FORMAT_VideoInfo &&
-						IsEqualGUID(pmt->subtype, lSubtypeGuid) &&
+						//IsEqualGUID(pmt->subtype, lSubtypeGuid) &&
 						lpSCC->InputSize.cx == lnX &&
 						lpSCC->InputSize.cy == lnY)
 					{
@@ -355,7 +351,7 @@ HRESULT CMediaStreamManager::ConfigAudioDevice()
 HRESULT CMediaStreamManager::StartPreview(const std::wstring& nsVideoDeviceName,
 	const std::wstring& nsVideoDevCap,
 	const std::wstring& nsAudioDeviceName,
-	const HWND hPrevice)
+	const HWND hPreview)
 {
 	if (mSetVideoDevice.empty() || mSetAudioDevice.empty())
 		return S_FALSE;
@@ -378,7 +374,7 @@ HRESULT CMediaStreamManager::StartPreview(const std::wstring& nsVideoDeviceName,
 		BREAK_HR(hr = BindVideoDevice(nsVideoDeviceName));
 
 		//Find Audio Device Object
-		BREAK_HR(hr = BindVideoDevice(nsAudioDeviceName));
+		BREAK_HR(hr = BindAudioDevice(nsAudioDeviceName));
 
 		BREAK_HR(hr = InitFilter());
 
@@ -415,7 +411,7 @@ HRESULT CMediaStreamManager::StartPreview(const std::wstring& nsVideoDeviceName,
 		}
 
 		//add video render
-		BREAK_HR(hr = mpGraph->AddFilter(mpVideoNullRender, L"Video Renderer"));
+		//BREAK_HR(hr = mpGraph->AddFilter(mpVideoNullRender, L"Video Renderer"));
 		//add Audio render
 		BREAK_HR(hr = mpGraph->AddFilter(mpAudioNullRender, L"Audio Renderer"));
 
@@ -424,8 +420,9 @@ HRESULT CMediaStreamManager::StartPreview(const std::wstring& nsVideoDeviceName,
 			NULL,
 			mpVCap,
 			mpGrabberVideoFilter,
-			mpVideoNullRender));
+			nullptr));
 
+		BREAK_HR(hr = SetupVideoWindow(hPreview));
 
 		//Render Audio Stream
 		BREAK_HR(hr = mpBuilder->RenderStream(&PIN_CATEGORY_CAPTURE,
@@ -460,6 +457,48 @@ HRESULT CMediaStreamManager::StartPreview(const std::wstring& nsVideoDeviceName,
 	return hr;
 }
 
+
+HRESULT CMediaStreamManager::SetupVideoWindow(HWND hWnd)
+{
+	HRESULT hr;
+
+	// Set the video window to be a child of the main window
+	hr = mpVW->put_Owner((OAHWND)hWnd);
+	if (FAILED(hr))
+		return hr;
+
+	// Set video window style
+	hr = mpVW->put_WindowStyle(WS_CHILD | WS_CLIPCHILDREN);
+	if (FAILED(hr))
+		return hr;
+
+
+	hr = ResizeVideoWindow(hWnd);
+	if (FAILED(hr))
+		return hr;
+
+	// Make the video window visible, now that it is properly positioned
+	hr = mpVW->put_Visible(OATRUE);
+	if (FAILED(hr))
+		return hr;
+
+	//store the preview wnd
+	mhPreviewWnd = hWnd;
+
+	return hr;
+}
+HRESULT CMediaStreamManager::ResizeVideoWindow(HWND hWnd)
+{
+	if (!mpMC)
+		return S_FALSE;
+
+	RECT rc;
+	// Make the preview video fill our window
+	GetClientRect(hWnd, &rc);
+	return mpVW->SetWindowPosition(0, 0, rc.right, rc.bottom);
+	 
+}
+
 //Stop record
 HRESULT CMediaStreamManager::StopAll()
 {
@@ -467,8 +506,6 @@ HRESULT CMediaStreamManager::StopAll()
 
 	//Stop Network Monitor
 	StopAsfMonitor();
-
-
 	//Stop Direct show
 	if (!mpMC == false)
 		mpMC->StopWhenReady();
