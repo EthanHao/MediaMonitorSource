@@ -135,6 +135,7 @@ void OpenCameraForMonitor(HWND hWnd)
 
 void StopCameraForMonitor(HWND hWnd)
 {
+	gStreamManager.StopAll();
 	return;
 }
 //
@@ -186,6 +187,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		gStreamManager.ResizeVideoWindow(hWnd);
 		break;
     case WM_DESTROY:
+		StopCameraForMonitor(hWnd);
         PostQuitMessage(0);
         break;
     default:
