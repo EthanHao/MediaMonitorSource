@@ -78,7 +78,7 @@ bool ISampleDealer::Stop()
 	{
 		mbExit = true;
 		mThread.join();
-		mThread.detach();
+		//mThread.detach();
 		return true;
 	}
 	return false;
