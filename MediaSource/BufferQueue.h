@@ -6,34 +6,38 @@
 class BufferQueue
 {
 private:
-	int mnStart; //Start Point
-	int mnEnd;   //End Point
+	int mnFront; //Start Point
+	int mnRear;   //End Point
 	char* mpBuffer = nullptr;
 	int mnElementSize;
 	int mnElementCount;
-	int mnCount = 0;
+
 private:
-	int CircualAdd(int n)
+	int CircularlyAdd(int n)
 	{
-		//Pop
-		if (n == mnElementCount - 1)
-			return 0;
-		else
-			return ++n;
+		return (n + 1) % mnElementCount;
 	}
 public:
 	BufferQueue(int nEleSize, int nEleCount)
 	{
-		mnStart = 0;
-		mnEnd = 0;
+		mnFront = -1;
+		mnRear = -1;
 		mnElementSize = nEleSize;
 		mnElementCount = nEleCount;
 		mpBuffer = (char*)malloc(nEleSize*nEleCount);
 	}
 	~BufferQueue()
 	{
-		if (mpBuffer != NULL)
+		if (mpBuffer != nullptr)
 			free(mpBuffer);
+	}
+	bool IsEmpty()
+	{
+		return mnFront == -1 && mnRear == -1;
+	}
+	bool IsFull()
+	{
+		return (mnRear + 1) % mnElementCount == mnFront;
 	}
 	int Push(double ndbTime, const char* npBuffer, int nLen)
 	{
@@ -41,31 +45,48 @@ public:
 		if (nLen + sizeof(double) != mnElementSize)
 			return 0;
 
+		if (IsEmpty())
+		{
+			mnFront = mnRear = 0;
+		}
+		else if (IsFull())
+		{
+			mnFront = CircularlyAdd(mnFront);
+			mnRear  = CircularlyAdd(mnRear);
+		}
+		else
+		{
+			mnRear = CircularlyAdd(mnRear);
+		}
 		//Push 
-		memcpy(mpBuffer + mnEnd*mnElementSize, &ndbTime, sizeof(double));
-		memcpy(mpBuffer + mnEnd*mnElementSize + sizeof(double), npBuffer, nLen);
-		mnEnd = CircualAdd(mnEnd);
-		//check if the start equal mnstart that mean we lost a single item
-		if (mnEnd == mnStart)
-			mnStart = CircualAdd(mnStart);
-		mnCount++;
+		memcpy(mpBuffer + mnRear*mnElementSize, &ndbTime, sizeof(double));
+		memcpy(mpBuffer + mnRear*mnElementSize + sizeof(double), npBuffer, nLen);
+
 		return nLen;
 	}
-	int Pop(double& ndbTime,  char* & npBuffer, int nLen)
+	int Pop(double& ndbTime, char* & npBuffer, int nLen)
 	{
 		//check if the queue is empty
-		if (mnStart == mnEnd)
+		if (IsEmpty())
 			return 0;
 
 		//check the buffer len
 		if (nLen + sizeof(double) != mnElementSize)
 			return 0;
 
+
 		//Pop
-		memcpy(&ndbTime, mpBuffer + mnStart*mnElementSize, sizeof(double));
-		memcpy(npBuffer, mpBuffer + mnStart*mnElementSize + sizeof(double), mnElementSize - sizeof(double));
-		mnStart = CircualAdd(mnStart);
-		mnCount--;
+		memcpy(&ndbTime, mpBuffer + mnFront*mnElementSize, sizeof(double));
+		memcpy(npBuffer, mpBuffer + mnFront*mnElementSize + sizeof(double), mnElementSize - sizeof(double));
+
+		//Only one element
+		if (mnRear == mnFront)
+		{
+			mnRear = mnFront = -1;
+		}
+		else
+			mnFront = CircularlyAdd(mnFront);
+
 		return nLen;
 	}
 
@@ -73,8 +94,5 @@ public:
 	{
 		return mnElementSize - sizeof(double);
 	}
-	bool IsFull()
-	{
-		return mnCount == mnElementCount;
-	}
+
 };
