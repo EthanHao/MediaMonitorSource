@@ -13,6 +13,22 @@ TEST(BufferQueue, PushWrongParameters)
 	int lRet = lQueue.Push(ldbTime, pBuffer, 100);
 	EXPECT_EQ(0, lRet);
 
+
+	delete[] pBuffer;
+}
+
+TEST(BufferQueue, PopWrongParameters)
+{
+	BufferQueue lQueue(100, 10);
+	double ldbTime = 0.001;
+	char * pBuffer = new char[100];
+	int lRet = lQueue.Push(ldbTime, pBuffer, 100 - sizeof(double));
+	EXPECT_EQ(lRet, 100 - sizeof(double));
+
+	double ldbPopTime = 0.0f;
+	lRet = lQueue.Pop(ldbPopTime, pBuffer, 100);
+	EXPECT_EQ(lRet,0);
+
 	delete[] pBuffer;
 }
 
